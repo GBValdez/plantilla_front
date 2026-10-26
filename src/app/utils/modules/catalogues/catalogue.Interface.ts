@@ -14,7 +14,7 @@ export interface CatalogueRoutesInterface {
   afterComplete?: (
     data: catalogueInterface,
     matDialog: MatDialog,
-    matDialogRef: MatDialogRef<CatalogueFormComponent>
+    matDialogRef: MatDialogRef<CatalogueFormComponent>,
   ) => void;
 }
 

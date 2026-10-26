@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BtnUploadFileDirective } from './btn-upload-file.directive';
 
 @NgModule({
-  declarations: [BtnUploadFileDirective],
-  imports: [CommonModule],
+  imports: [CommonModule, BtnUploadFileDirective],
   exports: [BtnUploadFileDirective],
 })
 export class BtnUploadFileModule {}

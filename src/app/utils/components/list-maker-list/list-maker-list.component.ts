@@ -1,3 +1,4 @@
+import { ChangeDetectionStrategy } from '@angular/core';
 import {
   Component,
   EventEmitter,
@@ -19,6 +20,7 @@ import { InputAutocompleteComponent } from '@utils/components/input-autocomplete
 import Swal from 'sweetalert2';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-list-maker-list',
   standalone: true,
   imports: [
@@ -37,13 +39,21 @@ export class ListMakerListComponent implements ControlValueAccessor {
   onTouch?: Function;
   onWrite?: Function;
   inputControl = new FormControl();
-  writeValue(obj: catalogueInterface[]): void {
-    if (obj) {
-      this.itemsSelected = obj;
-      setTimeout(() => {
-        this.onWrite?.(this.itemsSelected.map((el): string | number => el.id!));
-      }, 10);
-    }
+  disabled = false;
+  writeValue(value: (catalogueInterface | string | number)[] | null): void {
+    this.itemsSelected = (value ?? []).map((item) =>
+      typeof item === 'object'
+        ? item
+        : (this.listOpt.find((option) => option.id === item) ?? {
+            id: item,
+            name: String(item),
+            description: '',
+          }),
+    );
+  }
+  setDisabledState(disabled: boolean): void {
+    this.disabled = disabled;
+    disabled ? this.inputControl.disable() : this.inputControl.enable();
   }
   registerOnChange(fn: any): void {
     this.onWrite = fn;
@@ -70,17 +80,21 @@ export class ListMakerListComponent implements ControlValueAccessor {
 
   itemsSelected: catalogueInterface[] = [];
   removeItem(item: catalogueInterface): void {
+    if (this.disabled) return;
+    this.onTouch?.();
     this.itemsSelected = this.itemsSelected.filter((el) => el.id !== item.id);
     this.onWrite?.(this.itemsSelected.map((el) => el.id));
   }
 
   addItems(item: catalogueInterface): void {
+    if (this.disabled) return;
+    this.onTouch?.();
     this.inputControl.patchValue('');
     if (this.itemsSelected.some((el) => el.id === item.id)) {
       Swal.fire('Error', 'El item ya esta en la lista', 'error');
       return;
     }
-    this.itemsSelected.push(item);
+    this.itemsSelected = [...this.itemsSelected, item];
     this.onWrite?.(this.itemsSelected.map((el) => el.id));
   }
 }

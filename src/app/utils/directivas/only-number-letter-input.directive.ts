@@ -6,7 +6,10 @@ import { NgControl } from '@angular/forms';
   standalone: true,
 })
 export class OnlyNumberLetterInputDirective {
-  constructor(private el: ElementRef, private control: NgControl) {}
+  constructor(
+    private el: ElementRef,
+    private control: NgControl,
+  ) {}
 
   @HostListener('input', ['$event']) onInputChange(event: any) {
     let start = this.el.nativeElement.selectionStart;

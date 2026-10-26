@@ -40,3 +40,20 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Configuración local y herramientas de esta plantilla
+**/node_modules/
+**/.angular/
+**/dist/
+**/bin/
+**/obj/
+**/.vs/
+**/test-results/
+**/playwright-report/
+**/appsettings.Local.json
+.env
+.env.*
+!.env.example
+
+
+.serena/

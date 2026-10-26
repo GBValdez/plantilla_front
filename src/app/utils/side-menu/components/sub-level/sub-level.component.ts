@@ -1,76 +1,66 @@
-import { Component, Input, OnInit } from '@angular/core';
 import {
-  clickType,
-  sideMenuInterface,
-  sideMenuInterfaceInternal,
-} from '../../side-menu.interface';
-import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  Input,
+  OnInit,
+  inject,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { NgClass, NgStyle } from '@angular/common';
-
+import { Observable } from 'rxjs';
+import { sideMenuInterfaceInternal } from '../../side-menu.interface';
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-sub-level',
-  templateUrl: './sub-level.component.html',
-  styleUrls: ['./sub-level.component.css'],
   standalone: true,
-  imports: [MatIconModule, NgClass, NgStyle],
+  imports: [RouterLink, RouterLinkActive, MatIconModule],
+  templateUrl: './sub-level.component.html',
+  styleUrl: './sub-level.component.css',
 })
 export class SubLevelComponent implements OnInit {
+  private readonly destroy = inject(DestroyRef);
+  private readonly router = inject(Router);
   @Input() buttons: sideMenuInterfaceInternal[] = [];
-  @Input() showElementsObs!: Observable<boolean>;
-  @Input() collapseObs!: Observable<boolean>;
-  @Input() level: number = 0;
-  showElements!: boolean;
-  collapse!: boolean;
-  buttonOpenedChildren?: sideMenuInterfaceInternal;
-  hideButton(button: sideMenuInterface): boolean {
-    if (button.child && button.show === undefined) {
-      return button.child.some((child) => this.hideButton(child));
-    }
-    return button.show ?? false;
-  }
-
-  click(button: sideMenuInterfaceInternal, click?: clickType) {
-    if (click)
-      if (typeof click == 'string') {
-        this.route.navigate([click]);
-      } else {
-        click();
-      }
-    if (button.child) {
-      if (!button.openChild) {
-        if (this.buttonOpenedChildren) {
-          this.buttonOpenedChildren.openChild = false;
-        }
-        this.buttonOpenedChildren = button;
-        button.openChild = true;
-      } else {
-        this.buttonOpenedChildren = undefined;
-        button.openChild = false;
-      }
-    }
-  }
-  constructor(private route: Router) {}
-
-  getChild(button: sideMenuInterface): sideMenuInterface[] {
-    return button.child || [];
-  }
-
-  getPaddingLeft(): string {
-    return `${this.level + 1 * 20}px`;
-  }
+  @Input() showElementsObs?: Observable<boolean>;
+  @Input() collapseObs?: Observable<boolean>;
+  @Input() level = 0;
+  showElements = false;
+  collapse = true;
+  private buttonOpenedChildren?: sideMenuInterfaceInternal;
   ngOnInit(): void {
-    this.showElementsObs.subscribe((show) => {
-      this.showElements = show;
-    });
-    this.collapseObs.subscribe((collapse) => {
-      this.collapse = collapse;
-    });
-    this.buttons.forEach((button) => {
-      if (button.child) {
-        button.openChild = false;
-      }
-    });
+    this.showElementsObs
+      ?.pipe(takeUntilDestroyed(this.destroy))
+      .subscribe((value) => (this.showElements = value));
+    this.collapseObs
+      ?.pipe(takeUntilDestroyed(this.destroy))
+      .subscribe((value) => (this.collapse = value));
+  }
+  visible(button: sideMenuInterfaceInternal): boolean {
+    return button.show ?? !!button.child?.some((child) => this.visible(child));
+  }
+  link(button: sideMenuInterfaceInternal): string {
+    return typeof button.click === 'string' ? button.click : '';
+  }
+  active(button: sideMenuInterfaceInternal): boolean {
+    return this.link(button)
+      ? this.router.url.startsWith(this.link(button))
+      : !!button.child?.some((child) => this.active(child));
+  }
+  action(button: sideMenuInterfaceInternal): void {
+    if (typeof button.click === 'string')
+      void this.router.navigate([button.click]);
+    if (typeof button.click === 'function') button.click();
+    if (!button.child) return;
+    if (button.openChild) {
+      button.openChild = false;
+      this.buttonOpenedChildren = undefined;
+    } else {
+      if (this.buttonOpenedChildren)
+        this.buttonOpenedChildren.openChild = false;
+      button.openChild = true;
+      this.buttonOpenedChildren = button;
+    }
   }
 }

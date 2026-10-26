@@ -1,43 +1,55 @@
-<ul class="listOptions">
-  @for (button of buttons; track $index) { @if(hideButton(button)){
-  <li>
-    <div
-      class="item"
-      [ngClass]="{ itemSelect: button.present }"
-      (click)="click(button, button.click)"
-      [title]="button.text"
-    >
-      <div class="iconItem" [ngClass]="{ 'iconItem-collapse': collapse }">
-        <mat-icon>{{ button.icon }}</mat-icon>
-      </div>
-
-      @if (showElements) {
-      <div class="descItem">
-        <div>{{ button.text }}</div>
-      </div>
-      } @if (button.child && showElements) {
-      <div class="child">
-        <mat-icon>{{
-          button.openChild ? "keyboard_arrow_down" : "keyboard_arrow_right"
-        }}</mat-icon>
-      </div>
-      }
-    </div>
-    <div
-      [hidden]="!button.openChild || !showElements"
-      [ngStyle]="{
-        'padding-left': getPaddingLeft()
-      }"
-    >
-      <app-sub-level
-        [level]="level + 1"
-        [collapseObs]="collapseObs"
-        [showElementsObs]="showElementsObs"
-        [buttons]="getChild(button)"
-      >
-      </app-sub-level>
-      <hr />
-    </div>
-  </li>
-  } }
+<ul>
+  @for (button of buttons; track button.text; let index = $index) {
+    @if (visible(button)) {
+      <li>
+        @if (link(button) && !button.child) {
+          <a
+            [routerLink]="link(button)"
+            routerLinkActive="selected"
+            #current="routerLinkActive"
+            [attr.aria-current]="current.isActive ? 'page' : null"
+            [attr.aria-label]="button.text"
+            [title]="button.text"
+          >
+            <mat-icon aria-hidden="true">{{ button.icon }}</mat-icon>
+            @if (showElements) {
+              <span class="label">{{ button.text }}</span>
+            }
+          </a>
+        } @else {
+          <button
+            type="button"
+            (click)="action(button)"
+            [class.selected]="active(button)"
+            [attr.aria-label]="button.text"
+            [title]="button.text"
+            [attr.aria-expanded]="button.child ? !!button.openChild : null"
+          >
+            <mat-icon aria-hidden="true">{{ button.icon }}</mat-icon>
+            @if (showElements) {
+              <span class="label">{{ button.text }}</span>
+              @if (button.child) {
+                <mat-icon
+                  class="chevron"
+                  [class.open]="button.openChild"
+                  aria-hidden="true"
+                  >expand_more</mat-icon
+                >
+              }
+            }
+          </button>
+        }
+        @if (button.child) {
+          <div class="children" [hidden]="!button.openChild || !showElements">
+            <app-sub-level
+              [buttons]="button.child"
+              [collapseObs]="collapseObs"
+              [showElementsObs]="showElementsObs"
+              [level]="level + 1"
+            ></app-sub-level>
+          </div>
+        }
+      </li>
+    }
+  }
 </ul>

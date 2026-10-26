@@ -24,7 +24,7 @@ export class UserService {
   resetPassword(
     token: string,
     email: string,
-    password: string
+    password: string,
   ): Observable<any> {
     return this.httpClient.post(`${this.urlBase}/resetPassword`, {
       token,

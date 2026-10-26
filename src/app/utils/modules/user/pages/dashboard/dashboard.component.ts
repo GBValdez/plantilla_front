@@ -1,11 +1,8 @@
-import { Component } from '@angular/core';
-import { SideMenuComponent } from '@utils/side-menu/side-menu.component';
-import { sideMenuInterface } from '@utils/side-menu/side-menu.interface';
-
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-dashboard',
   standalone: true,
-  imports: [SideMenuComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

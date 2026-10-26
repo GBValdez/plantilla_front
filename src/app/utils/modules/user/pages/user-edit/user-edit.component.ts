@@ -1,3 +1,5 @@
+import { ListMakerListComponent } from '@utils/components/list-maker-list/list-maker-list.component';
+import { ChangeDetectionStrategy } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -9,101 +11,113 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { UserDto } from '@user/interface/user.interface';
 import { RolService } from '@user/services/rol.service';
 import { UserAdminService } from '@user/services/user-admin.service';
 import { catalogueInterface } from '@utils/commons.interface';
-import { ListMakerListComponent } from '@utils/components/list-maker-list/list-maker-list.component';
+import { finalize } from 'rxjs';
 import Swal from 'sweetalert2';
-
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-user-edit',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatCardModule,
     ListMakerListComponent,
+    MatCardModule,
     MatButtonModule,
     MatFormFieldModule,
     MatSelectModule,
+    RouterLink,
   ],
   templateUrl: './user-edit.component.html',
   styleUrl: './user-edit.component.scss',
 })
 export class UserEditComponent implements OnInit {
+  userName = '';
+  userEdit?: UserDto;
+  form!: FormGroup;
+  rolOpt: catalogueInterface[] = [];
+  saving = false;
+  loadError = false;
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private userSvc: UserAdminService,
-    private actRoute: ActivatedRoute,
-    private rolSvc: RolService
+    private route: ActivatedRoute,
+    private roles: RolService,
   ) {}
-  userName: string = '';
-  userEdit!: UserDto;
-  form!: FormGroup;
   ngOnInit(): void {
     this.form = this.fb.group({
-      roles: [[], [Validators.required]],
-      status: [true, [Validators.required]],
+      roles: [[], Validators.required],
+      status: [true, Validators.required],
     });
-    this.userName = this.actRoute.snapshot.params['userName'];
-    this.userSvc.getUserByUserName(this.userName).subscribe((res) => {
-      this.userEdit = res;
-      if (res.roles) {
-        const rolesObj: any = {
-          roles: res.roles.map((rol): catalogueInterface => {
-            return {
-              id: rol,
-              name: rol,
-              description: '',
-            };
-          }),
-          status: res.isActive,
-        };
-
-        this.form.patchValue(rolesObj);
-      }
+    this.userName = this.route.snapshot.params['userName'];
+    this.userSvc.getUserByUserName(this.userName).subscribe({
+      next: (user) => {
+        this.userEdit = user;
+        this.form.patchValue({
+          roles: (user.roles ?? []).map((name) => ({
+            id: name,
+            name,
+            description: '',
+          })),
+          status: user.isActive,
+        });
+      },
+      error: () => (this.loadError = true),
     });
   }
 
-  rolOpt: catalogueInterface[] = [];
-
-  cancel() {
-    this.router.navigate(['/session/user-home']);
-  }
-  clean() {
-    this.form.patchValue({
-      roles: [],
+  foundRoles(query: string): void {
+    this.roles.get({ all: true }).subscribe({
+      next: (roles) => {
+        this.rolOpt = roles.items
+          .filter((role) =>
+            role.name.toLowerCase().includes(query.toLowerCase()),
+          )
+          .map((role) => ({ id: role.name, name: role.name, description: '' }));
+      },
+      error: () => {
+        this.rolOpt = [];
+      },
     });
   }
-  foundRoles(rol: string) {
-    this.rolSvc.get({ all: true }).subscribe((res) => {
-      this.rolOpt = res.items.map((rol) => {
-        return {
-          id: rol.name,
-          name: rol.name,
-          description: '',
-        };
+  clean(): void {
+    this.form.patchValue({ roles: [] });
+  }
+  async save(): Promise<void> {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    if (this.saving) return;
+    this.saving = true;
+    const confirmation = await Swal.fire({
+      title: '¿Estás seguro de actualizar el usuario?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Actualizar',
+      cancelButtonText: 'Cancelar',
+    });
+    if (!confirmation.isConfirmed) {
+      this.saving = false;
+      return;
+    }
+    const data = this.form.getRawValue();
+    data.roles = data.roles.map((role: string | catalogueInterface) =>
+      typeof role === 'string' ? role : role.id,
+    );
+    this.userSvc
+      .updateUser(data, this.userName)
+      .pipe(finalize(() => (this.saving = false)))
+      .subscribe({
+        next: async () => {
+          await Swal.fire('El usuario ha sido actualizado', '', 'success');
+          void this.router.navigate(['/session/user-home']);
+        },
+        error: () => {},
       });
-    });
-  }
-  async save() {
-    if (this.form.valid) {
-      const result = await Swal.fire({
-        title: '¿Estás seguro de actualizar el usuario?',
-        showCancelButton: true,
-        confirmButtonText: `Actualizar`,
-        icon: 'question',
-      });
-      if (result.isConfirmed) {
-        this.userSvc
-          .updateUser(this.form.value, this.userName)
-          .subscribe(async (res) => {
-            await Swal.fire('El usuario ha sido actualizado', '', 'success');
-            this.router.navigate(['/session/user-home']);
-          });
-      }
-    } else this.form.markAllAsTouched();
   }
 }

@@ -1,2 +1,16 @@
+@if (demo) {
+  <aside class="demo-notice" aria-label="Modo de demostración">
+    <strong>DEMO LOCAL</strong>
+    <span>Datos ficticios · Cambios temporales · No se envían correos</span>
+  </aside>
+}
 <router-outlet></router-outlet>
-<ngx-spinner></ngx-spinner>
+<ngx-spinner
+  bdColor="rgba(19, 45, 42, 0.45)"
+  size="medium"
+  color="#d9f291"
+  type="ball-scale-multiple"
+  [fullScreen]="true"
+>
+  <p role="status" style="color: white">Procesando…</p>
+</ngx-spinner>

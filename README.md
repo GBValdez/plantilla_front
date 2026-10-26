@@ -1,27 +1,50 @@
-# Fletes
+# Pedidos · Plantilla Angular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.2.
+Angular 22.2.3, CLI/Material 22.2.4 y TypeScript 6. Inter e iconos locales. Conserva menú por hover, transiciones, tarjetas con menú, búsqueda de roles con etiquetas y confirmaciones originales.
 
-## Development server
+## Probar la demo
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Necesitas Node compatible con Angular: ^22.22.3, ^24.15.0 o 26+.
 
-## Code scaffolding
+```powershell
+npm ci
+npm run demo
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Abre http://127.0.0.1:4200/login. Administrador: **admin@demo.local / Demo2026!**. Miembro: **usuario@demo.local / Demo2026!**. Son datos ficticios exclusivos de la demo local, sin PostgreSQL ni SMTP. [Funciones y límites](DEMO.md).
 
-## Build
+## Usar la API real
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Configura y arranca el repositorio [.NET](https://github.com/GBValdez/plantilla_Net). Después:
 
-## Running unit tests
+```powershell
+npm ci
+npm start
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+El proxy envía `/api` a http://localhost:5279 eliminando el prefijo. La cuenta real se configura al inicializar la API; las credenciales demo no dan acceso a la API real. En producción configura tu servidor web para reenviar `/api` y servir `index.html` al abrir rutas de Angular.
 
-## Running end-to-end tests
+## Verificar
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```powershell
+npm run check:components
+npm run build
+npm test
+npm run test:e2e
+npm run test:demo-api
+npm run test:demo-ui
+```
 
-## Further help
+También puedes usar `.\Verificar.ps1`. Playwright utiliza Edge en Windows y puertos de prueba separados. En otras plataformas adapta `channel` e instala el navegador correspondiente.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+`check:components` compila todos los componentes, incluso los que no tienen ruta. Las suites activas están en `src/app/core-tests`, `e2e`, `demo-tests` y `tools/demo-api.test.mjs`. Los tests generados heredados se conservan como referencia fuera de la suite activa.
+
+## Diseño y componentes
+
+- [Actualización visual y capturas](DISENO-INTERFAZ.md).
+- [Comparación con las mecánicas originales](REVISION-COMPONENTES.md).
+- `src/app/utils` contiene CMS, formularios, catálogos, autocompletados y otras utilidades reutilizables.
+
+Se conserva el adaptador global Moment con formato DD/MM/YYYY. El build genera un aviso informativo de tamaño inicial cercano a 563 kB frente al presupuesto de 500 kB; el límite de error sigue en 1 MB. Los enlaces de ejemplo a módulos de negocio del original siguen pendientes de implementación.
+
+La demo usa un prefijo de almacenamiento distinto al normal. El JWT real tiene caducidad y sólo se envía a la API; la autorización efectiva se valida en el servidor. No guardes credenciales reales en los archivos del repositorio.

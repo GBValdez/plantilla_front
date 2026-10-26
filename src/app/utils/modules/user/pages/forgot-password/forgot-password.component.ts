@@ -1,3 +1,5 @@
+import { finalize } from 'rxjs';
+import { ChangeDetectionStrategy } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -13,6 +15,7 @@ import { UserService } from '@user/services/user.service';
 import Swal from 'sweetalert2';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-forgot-password',
   standalone: true,
   imports: [
@@ -29,7 +32,7 @@ export class ForgotPasswordComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private userSvc: UserService,
-    private dialogRef: MatDialogRef<ForgotPasswordComponent>
+    private dialogRef: MatDialogRef<ForgotPasswordComponent>,
   ) {}
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -37,16 +40,27 @@ export class ForgotPasswordComponent implements OnInit {
     });
   }
   form!: FormGroup;
-  forgotPassword() {
-    if (this.form.valid) {
-      this.userSvc.forgotPassword(this.form.value.email!).subscribe((res) => {
-        Swal.fire({
-          title: 'Email enviado',
-          text: 'Si tu dirección de correo electrónico está registrada y activa en nuestro sistema, te enviaremos un enlace para restablecer tu contraseña muy pronto. ¡Estamos aquí para ayudarte!',
-          icon: 'success',
-        });
-        this.dialogRef.close();
+  submitting = false;
+  forgotPassword(): void {
+    if (this.submitting) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.submitting = true;
+    this.userSvc
+      .forgotPassword(this.form.value.email.trim())
+      .pipe(finalize(() => (this.submitting = false)))
+      .subscribe({
+        next: () => {
+          this.dialogRef.close();
+          void Swal.fire({
+            title: 'Revisa tu correo',
+            text: 'Si la cuenta está registrada y activa, recibirás un enlace para cambiar tu contraseña.',
+            icon: 'success',
+          });
+        },
+        error: () => {},
       });
-    } else this.form.markAllAsTouched();
   }
 }

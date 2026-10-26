@@ -1,3 +1,4 @@
+import { ChangeDetectionStrategy } from '@angular/core';
 import {
   AfterViewInit,
   Component,
@@ -12,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-autocomplete-google-maps',
   standalone: true,
   imports: [MatFormFieldModule, MatInputModule],
@@ -25,7 +27,7 @@ export class AutocompleteGoogleMapsComponent implements AfterViewInit {
   changeComplete: OutputEmitterRef<google.maps.LatLng> = output();
   ngAfterViewInit(): void {
     this.autoComplete = new google.maps.places.Autocomplete(
-      this.search.nativeElement
+      this.search.nativeElement,
     );
 
     this.autoComplete.addListener('place_changed', () => {

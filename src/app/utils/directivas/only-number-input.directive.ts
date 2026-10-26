@@ -8,7 +8,10 @@ import { NgControl } from '@angular/forms';
 export class OnlyNumberInputDirective {
   @Input() decimals: boolean = false; // Define el input para permitir decimales
 
-  constructor(private el: ElementRef, private control: NgControl) {}
+  constructor(
+    private el: ElementRef,
+    private control: NgControl,
+  ) {}
 
   @HostListener('input', ['$event']) onInputChange(event: any) {
     let start = this.el.nativeElement.selectionStart;

@@ -1,0 +1,49 @@
+:host {
+  display: block;
+}
+form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 18px;
+  width: 100% !important;
+  margin-top: 0 !important;
+}
+.title {
+  grid-column: 1 / -1;
+  font-size: 26px !important;
+  padding: 4px 0 0;
+  margin: 0 0 24px !important;
+}
+mat-form-field {
+  width: 100%;
+  margin: 0 0 8px !important;
+  min-width: 0;
+}
+mat-form-field:nth-of-type(3),
+mat-form-field:nth-of-type(6),
+mat-form-field:nth-of-type(7),
+form > p,
+form > section {
+  grid-column: 1 / -1;
+}
+form > p {
+  font-size: 12px;
+  line-height: 1.65;
+}
+form > section {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 8px;
+  gap: 10px;
+}
+form > section button {
+  margin: 0;
+}
+@media (max-width: 480px) {
+  form {
+    grid-template-columns: 1fr;
+  }
+  .title {
+    font-size: 24px !important;
+  }
+}

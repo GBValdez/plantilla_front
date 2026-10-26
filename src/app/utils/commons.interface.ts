@@ -31,7 +31,7 @@ export interface catalogueModal {
   afterComplete?: (
     data: catalogueInterface,
     matDialog: MatDialog,
-    matDialogRef: MatDialogRef<CatalogueFormComponent>
+    matDialogRef: MatDialogRef<CatalogueFormComponent>,
   ) => void;
 }
 export interface pagDto<T> {

@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
-
 import {
   FormBuilder,
   FormGroup,
@@ -18,10 +17,20 @@ import { LoginService } from '@auth/services/login.service';
 import { AuthService } from '@auth/services/auth.service';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import { authUserInterface } from '@auth/interface/auth.inteface';
-import { UserCreateComponent } from '@utils/modules/user/pages/user-create/user-create.component';
+import { UserCreateComponent } from '@user/pages/user-create/user-create.component';
+import { finalize } from 'rxjs';
+import { environment } from '@env/environment';
+import { BtnUploadFileDirective } from '@utils/btn-upload-file/btn-upload-file.directive';
 
+interface LoginClaims {
+  email: string;
+  clientId?: string;
+  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?:
+    string | string[];
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'?: string;
+}
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-home',
   standalone: true,
   imports: [
@@ -29,68 +38,90 @@ import { UserCreateComponent } from '@utils/modules/user/pages/user-create/user-
     MatInputModule,
     MatFormFieldModule,
     MatButtonModule,
-    MatCheckboxModule,
     ReactiveFormsModule,
-    ForgotPasswordComponent,
     MatIconModule,
-    UserCreateComponent,
+    BtnUploadFileDirective,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
+  readonly demo = environment.demo;
+  form!: FormGroup;
+  submitting = false;
+  errorMessage = '';
   constructor(
     private loginSvc: LoginService,
     private fb: FormBuilder,
-    private authService: AuthService,
+    private auth: AuthService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private element: ElementRef<HTMLElement>,
   ) {}
   ngOnInit(): void {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
+      password: ['', Validators.required],
     });
   }
-  form!: FormGroup;
-  login() {
-    if (this.form.valid) {
-      this.loginSvc.login(this.form.value).subscribe((res) => {
-        const decoded: any = jwtDecode(res.token);
-        // console.log(decoded);
-        const newUser: authUserInterface = {
-          token: res.token,
-          expiration: res.expiration,
-          email: decoded.email,
-          roles:
-            decoded[
-              'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-            ],
-          userName:
-            decoded[
-              'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'
-            ],
-          clientId: decoded.clienteId,
-        };
-        console.log(newUser);
-        this.authService.setAuth(newUser);
-        this.router.navigate(['/session/dashboard']);
-      });
-      this.form.patchValue({ email: '', password: '' });
-    } else {
+  login(): void {
+    if (this.submitting) return;
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.element.nativeElement
+        .querySelector<HTMLInputElement>('input.ng-invalid')
+        ?.focus();
+      return;
     }
+    this.submitting = true;
+    this.errorMessage = '';
+    this.loginSvc
+      .login({ ...this.form.value, email: this.form.value.email.trim() })
+      .pipe(finalize(() => (this.submitting = false)))
+      .subscribe({
+        next: (res) => {
+          try {
+            const claims = jwtDecode<LoginClaims>(res.token);
+            const role =
+              claims[
+                'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+              ];
+            this.auth.setAuth({
+              token: res.token,
+              expiration: res.expiration,
+              email: claims.email,
+              roles: Array.isArray(role) ? role : role ? [role] : [],
+              userName:
+                claims[
+                  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'
+                ] ?? claims.email,
+              clientId: claims.clientId ? Number(claims.clientId) : undefined,
+            });
+            if (!this.auth.hasAuth()) throw new Error('invalid session');
+            this.form.reset();
+            void this.router.navigate(['/session/dashboard']);
+          } catch {
+            this.errorMessage =
+              'La sesión recibida no es válida. Vuelve a intentarlo.';
+          }
+        },
+        error: () => {
+          this.errorMessage =
+            'No se pudo iniciar sesión. Revisa tus datos e inténtalo de nuevo.';
+        },
+      });
   }
-  createAccount() {
+  createAccount(): void {
     this.dialog.open(UserCreateComponent, {
-      width: '40%',
-      minWidth: '280px',
+      width: '580px',
+      maxWidth: '94vw',
+      maxHeight: '92vh',
     });
   }
-  forgotPassword() {
+  forgotPassword(): void {
     this.dialog.open(ForgotPasswordComponent, {
-      width: '40%',
-      minWidth: '280px',
+      width: '460px',
+      maxWidth: '94vw',
     });
   }
 }

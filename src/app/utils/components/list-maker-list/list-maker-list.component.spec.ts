@@ -8,10 +8,9 @@ describe('ListMakerListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListMakerListComponent]
-    })
-    .compileComponents();
-    
+      imports: [ListMakerListComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ListMakerListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

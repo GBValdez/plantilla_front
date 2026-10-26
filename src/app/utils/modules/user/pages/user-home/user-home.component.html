@@ -1,112 +1,116 @@
-<section class="flex justify-between">
-  <h2 class="title">Usuarios</h2>
-</section>
-
-@if(users.length>0){
-<mat-card class="w-full">
-  <mat-card-content>
-    <form
-      (ngSubmit)="search()"
-      class="flex sm:justify-between justify-center flex-wrap w-full"
-      [formGroup]="form"
-    >
-      <mat-form-field class="sm:w-[30%] w-full">
-        <mat-label>UserName</mat-label>
-        <input matInput placeholder="Nombre" formControlName="UserNameCont" />
-      </mat-form-field>
-      <mat-form-field class="sm:w-[30%] w-full">
-        <mat-label>Email</mat-label>
-        <input matInput placeholder="Nombre" formControlName="EmailCont" />
-      </mat-form-field>
-
-      <mat-form-field class="sm:w-[30%] w-full">
-        <mat-label>Roles</mat-label>
-        <mat-select formControlName="roles" multiple>
-          @for (rol of rolesOpt; track rol) {
-          <mat-option [value]="rol.id">{{ rol.name }}</mat-option>
+<div class="page-title">
+  <div>
+    <span class="eyebrow">ADMINISTRACIÓN</span>
+    <h1>Usuarios</h1>
+    <p>Gestiona las cuentas y los permisos de tu equipo.</p>
+  </div>
+  <span class="count">{{ sizeUsers }} resultados</span>
+</div>
+<section class="filter-panel" aria-label="Filtrar usuarios">
+  <form [formGroup]="form" (ngSubmit)="search()">
+    <div class="filter-grid">
+      <mat-form-field appearance="outline"
+        ><mat-label>Nombre de usuario</mat-label
+        ><input
+          matInput
+          name="username-filter"
+          autocomplete="off"
+          formControlName="UserNameCont"
+      /></mat-form-field>
+      <mat-form-field appearance="outline"
+        ><mat-label>Correo electrónico</mat-label
+        ><input
+          matInput
+          name="email-filter"
+          autocomplete="off"
+          formControlName="EmailCont"
+      /></mat-form-field>
+      <mat-form-field appearance="outline"
+        ><mat-label>Roles</mat-label
+        ><mat-select formControlName="roles" multiple>
+          @for (rol of rolesOpt; track rol.id) {
+            <mat-option [value]="rol.id">{{ rol.name }}</mat-option>
           }
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field class="sm:w-[30%] w-full">
-        <mat-label>Estado</mat-label>
-        <mat-select formControlName="isActive">
-          <mat-option [value]="null">Todos</mat-option>
-          <mat-option [value]="true">Activo</mat-option>
-          <mat-option [value]="false">Inactivo</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="flex justify-end w-full flex-wrap">
-        <button
-          mat-raised-button
-          class="ml-[5px] mt-[5px]"
-          type="button"
-          (click)="cleanFilter()"
-        >
-          Limpiar
-        </button>
-        <button
-          mat-raised-button
-          color="primary"
-          class="ml-[5px] mt-[5px]"
-          type="submit"
-          [disabled]="form.invalid"
-        >
-          Buscar
-        </button>
-      </div>
-    </form>
-  </mat-card-content>
-</mat-card>
-<section class="flex flex-wrap">
-  @for (user of users; track $index) {
-  <mat-card
-    class="w-[250px] m-[5px] cursor-pointer box-border"
-    [matMenuTriggerFor]="menu"
-  >
-    <mat-card-header>
-      <mat-card-title
-        ><h3 class="titleItem">
-          {{ user.userName }}
-        </h3></mat-card-title
+        </mat-select></mat-form-field
       >
-    </mat-card-header>
-    <mat-card-content>
-      <div class="break-words">
-        <h4 class="subtitleItem">Email:</h4>
-        {{ user.email }}
-      </div>
-      <div>
-        <h4 class="subtitleItem">Estado:</h4>
-        {{ user.isActive ? "Activo" : "Inactivo" }}
-      </div>
-    </mat-card-content>
-  </mat-card>
-  <mat-menu #menu="matMenu" xPosition="after">
-    <button
-      mat-menu-item
-      [routerLink]="'/session/user-home/edit/' + user.userName"
-    >
-      <mat-icon>edit</mat-icon>
-      <span>Editar</span>
-    </button>
-  </mat-menu>
-  }
+      <mat-form-field appearance="outline"
+        ><mat-label>Estado</mat-label
+        ><mat-select formControlName="isActive"
+          ><mat-option [value]="null">Todos</mat-option
+          ><mat-option [value]="true">Activo</mat-option
+          ><mat-option [value]="false">Inactivo</mat-option></mat-select
+        ></mat-form-field
+      >
+    </div>
+    <div class="filter-actions">
+      <button mat-button type="button" (click)="cleanFilter()">
+        Limpiar filtros</button
+      ><button mat-flat-button type="submit" [disabled]="loading">
+        <mat-icon>search</mat-icon>Buscar
+      </button>
+    </div>
+  </form>
 </section>
-<footer>
+<section
+  class="results"
+  aria-label="Listado de usuarios"
+  [attr.aria-busy]="loading"
+>
+  @if (loading) {
+    <p class="empty-state" role="status">Cargando usuarios…</p>
+  } @else if (loadError) {
+    <div class="empty-state" role="alert">
+      <mat-icon>cloud_off</mat-icon>
+      <h2>No pudimos cargar los usuarios</h2>
+      <p>Comprueba la conexión e inténtalo nuevamente.</p>
+      <button mat-stroked-button type="button" (click)="getUser()">
+        Reintentar
+      </button>
+    </div>
+  } @else if (users.length) {
+    <div class="user-cards">
+      @for (user of users; track user.userName) {
+        <button
+          type="button"
+          class="user-card"
+          [matMenuTriggerFor]="userMenu"
+          [attr.aria-label]="'Opciones de ' + user.userName"
+        >
+          <span class="avatar" aria-hidden="true">{{
+            user.userName.charAt(0).toUpperCase()
+          }}</span>
+          <span class="user-name">{{ user.userName }}</span>
+          <span class="user-email">{{ user.email }}</span>
+          <span class="status" [class.inactive]="!user.isActive">{{
+            user.isActive ? "Activo" : "Inactivo"
+          }}</span>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <a
+            mat-menu-item
+            [routerLink]="['/session/user-home/edit', user.userName]"
+          >
+            <mat-icon>edit</mat-icon><span>Editar</span>
+          </a>
+        </mat-menu>
+      }
+    </div>
+  } @else {
+    <div class="empty-state" role="status">
+      <mat-icon>person_search</mat-icon>
+      <h2>No encontramos usuarios</h2>
+      <p>Prueba con otros datos o limpia los filtros.</p>
+      <button mat-stroked-button type="button" (click)="cleanFilter()">
+        Limpiar filtros
+      </button>
+    </div>
+  }
   <mat-paginator
     [length]="sizeUsers"
-    [pageSize]="10"
-    [pageSizeOptions]="[5, 10, 15, 20]"
-    class="rounded-xl"
+    [pageSize]="pageSize"
+    [pageIndex]="indexPage"
+    [pageSizeOptions]="[5, 10, 20, 50]"
     (page)="changePagination($event)"
-  >
-  </mat-paginator>
-</footer>
-} @else{
-<img
-  class="sm:w-[40%] w-[90%] left-0 right-0 mx-auto rounded-3xl"
-  src="./assets/img/noFound.png"
-  alt=""
-/>
-}
+    aria-label="Paginación de usuarios"
+  ></mat-paginator>
+</section>

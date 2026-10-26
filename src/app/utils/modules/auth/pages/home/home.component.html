@@ -1,72 +1,138 @@
-<div
-  class="flex fixed flex-wrap justify-center w-full h-full left-0 top-0 pt-[30px] overflow-hidden"
-  style="background-image: url('fondoLogin.webp'); background-size: cover"
->
-  <div class="w-full flex justify-center flex-wrap">
-    <h2>Bienvenido a Pedidos</h2>
-  </div>
-</div>
-
-<section class="w-full h-full flex justify-center items-center">
-  <mat-card class="w-[30%] min-w-[250px]">
-    <mat-card-header>
-      <mat-card-title><h3>Iniciar Sesión</h3></mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
+<main class="login-layout">
+  <section class="welcome-panel" aria-labelledby="welcome-title">
+    <a class="brand" href="/login"
+      ><span class="brand-mark"><mat-icon>layers</mat-icon></span
+      >Pedidos</a
+    >
+    <div class="welcome-copy">
+      <span class="eyebrow">TU ESPACIO DE TRABAJO</span>
+      <h1 id="welcome-title">
+        Todo en orden.<br /><span>Un solo lugar.</span>
+      </h1>
+      <p>
+        Organiza tu equipo, administra tus usuarios y construye el siguiente
+        paso de tu proyecto.
+      </p>
+      <div class="feature">
+        <mat-icon>dashboard_customize</mat-icon>
+        <div>
+          <strong>Una base para crecer</strong
+          ><span>Herramientas claras para tu día a día.</span>
+        </div>
+      </div>
+      <div class="feature">
+        <mat-icon>people_outline</mat-icon>
+        <div>
+          <strong>Tu equipo, conectado</strong
+          ><span>Accesos y permisos en un mismo panel.</span>
+        </div>
+      </div>
+    </div>
+    <span class="welcome-footer">Menos pasos. Más posibilidades.</span>
+    <div class="orbit orbit-one" aria-hidden="true"></div>
+    <div class="orbit orbit-two" aria-hidden="true"></div>
+  </section>
+  <section class="form-panel">
+    <div class="login-card">
+      <span class="section-label">BIENVENIDO DE NUEVO</span>
+      <h2>Inicia sesión</h2>
+      <p class="intro">Ingresa tus datos para acceder a tu espacio.</p>
+      @if (demo) {
+        <div class="demo-credentials">
+          <strong>Credenciales de demostración</strong>
+          <span>Correo: <code>admin@demo.local</code></span>
+          <span>Contraseña: <code>Demo2026!</code></span>
+        </div>
+      }
       <form [formGroup]="form" (ngSubmit)="login()">
-        <mat-form-field class="w-full mb-2">
-          <mat-label>Correo</mat-label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Correo electrónico</mat-label>
           <input
             matInput
-            type="text"
-            Biografía="Correo"
+            type="email"
+            name="email"
+            spellcheck="false"
+            autocomplete="username"
             formControlName="email"
+            placeholder="nombre@empresa.com"
           />
-          <mat-error>El campo es <strong>requerido</strong></mat-error>
+          <mat-icon matPrefix>mail_outline</mat-icon>
+          <mat-error>{{
+            form.get("email")?.hasError("required")
+              ? "Ingresa tu correo electrónico."
+              : "Ingresa un correo válido."
+          }}</mat-error>
         </mat-form-field>
-        <mat-form-field class="w-full mb-2">
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Contraseña</mat-label>
           <input
             matInput
             type="password"
-            placeholder="Contraseña"
+            name="password"
+            autocomplete="current-password"
             formControlName="password"
             #passwordInput
           />
+          <mat-icon matPrefix>lock_outline</mat-icon>
           <button
             matSuffix
             mat-icon-button
             type="button"
+            [attr.aria-label]="
+              passwordInput.type === 'text'
+                ? 'Ocultar contraseña'
+                : 'Mostrar contraseña'
+            "
+            [attr.aria-pressed]="passwordInput.type === 'text'"
             (click)="
               passwordInput.type =
-                passwordInput.type == 'text' ? 'password' : 'text'
+                passwordInput.type === 'text' ? 'password' : 'text'
             "
           >
             <mat-icon>{{
-              passwordInput.type == "text" ? "visibility_off" : "visibility"
+              passwordInput.type === "text" ? "visibility_off" : "visibility"
             }}</mat-icon>
           </button>
-          <mat-error>El campo es <strong>requerido</strong></mat-error>
+          <mat-error>Ingresa tu contraseña.</mat-error>
         </mat-form-field>
-        <div class="w-full flex justify-center">
-          <button mat-raised-button color="primary" type="submit">
-            Iniciar Sesión
+        <div class="recovery">
+          <button type="button" class="text-button" (click)="forgotPassword()">
+            ¿Olvidaste tu contraseña?
           </button>
         </div>
+        @if (errorMessage) {
+          <p class="form-error" role="alert">{{ errorMessage }}</p>
+        }
+        <button
+          mat-flat-button
+          color="primary"
+          class="submit-button"
+          type="submit"
+          [disabled]="submitting"
+          [attr.aria-busy]="submitting"
+        >
+          {{ submitting ? "Iniciando sesión…" : "Entrar a mi espacio"
+          }}<mat-icon iconPositionEnd>arrow_forward</mat-icon>
+        </button>
       </form>
-      <br />
-      <p
-        class="text-center font-bold cursor-pointer text-orange-600"
-        (click)="forgotPassword()"
-      >
-        ¿Olvidaste tu contraseña?
+      <p class="signup">
+        ¿Primera vez aquí?
+        <button type="button" class="text-button" (click)="createAccount()">
+          Crea tu cuenta
+        </button>
       </p>
-      <p
-        class="text-center text-orange-600 font-bold cursor-pointer"
-        (click)="createAccount()"
+      <div class="login-note">
+        <mat-icon>verified_user</mat-icon>Un espacio para trabajar mejor.
+      </div>
+      <button
+        type="button"
+        class="text-button"
+        dtBtnUploadFile
+        typesPermitted=".png"
       >
-        ¿No tienes usuario aun? Regístrate
-      </p>
-    </mat-card-content>
-  </mat-card>
-</section>
+        Insertar imagen
+      </button>
+    </div>
+    <span class="form-footer">Pedidos · Administración simple</span>
+  </section>
+</main>

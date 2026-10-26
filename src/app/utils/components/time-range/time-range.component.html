@@ -12,7 +12,9 @@
     </mat-form-field>
   </div>
 
-  @if(form.hasError("rangeInvalid")){
-  <p class="text-red-600">La hora de inicio debe ser menor a la hora de fin</p>
+  @if (form.hasError("rangeInvalid")) {
+    <p class="text-red-600">
+      La hora de inicio debe ser menor a la hora de fin
+    </p>
   }
 </form>

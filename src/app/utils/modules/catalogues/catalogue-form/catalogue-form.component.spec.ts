@@ -8,10 +8,9 @@ describe('CatalogueFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CatalogueFormComponent]
-    })
-    .compileComponents();
-    
+      imports: [CatalogueFormComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(CatalogueFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

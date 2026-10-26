@@ -1,24 +1,40 @@
 <nav
-  (mouseenter)="noCollapseMenu()"
-  (mouseleave)="collapseMenu()"
-  (touchEnd)="start()"
-  [ngClass]="{ navCollapse: collapseValue }"
+  #navigation
+  aria-label="Navegación principal"
+  tabindex="0"
+  [class.navCollapse]="collapseValue"
+  (pointerenter)="pointerEnter($event)"
+  (pointerleave)="pointerLeave($event)"
+  (focusin)="focusIn($event)"
+  (focusout)="focusOut($event)"
+  (keydown.escape)="collapseMenu()"
 >
-  <section class="body">
-    <section class="header">
-      <img [hidden]="!showElementsValue" class="logo" src="logo.webp" />
-      <h3 [hidden]="!showElementsValue">Pedidos</h3>
-      @if(gmail){
-      <h4 [hidden]="!showElementsValue">{{ gmail }}</h4>
-      }
-      <img [hidden]="showElementsValue" class="logo-only" src="logo.webp" />
-    </section>
-    <section class="menu">
-      <app-sub-level
-        [collapseObs]="getObsColapse()"
-        [showElementsObs]="getObsShowElements()"
-        [buttons]="buttons"
-      ></app-sub-level>
-    </section>
-  </section>
+  <div class="brand">
+    <img src="logo.webp" alt="" class="logo" />
+    @if (showElementsValue) {
+      <div class="brand-copy">
+        <h2>Pedidos</h2>
+        <p>{{ gmail }}</p>
+      </div>
+    }
+  </div>
+  <button
+    class="menu-toggle"
+    type="button"
+    (click)="toggle()"
+    [attr.aria-expanded]="!collapseValue"
+    aria-controls="primary-menu"
+    [attr.aria-label]="collapseValue ? 'Abrir menú' : 'Contraer menú'"
+  >
+    <mat-icon aria-hidden="true">{{
+      collapseValue ? "menu" : "menu_open"
+    }}</mat-icon>
+  </button>
+  <div id="primary-menu" class="menu">
+    <app-sub-level
+      [buttons]="buttons"
+      [collapseObs]="getObsColapse()"
+      [showElementsObs]="getObsShowElements()"
+    ></app-sub-level>
+  </div>
 </nav>

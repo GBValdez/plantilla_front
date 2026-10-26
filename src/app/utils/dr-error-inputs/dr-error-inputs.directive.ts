@@ -16,7 +16,7 @@ export class DrErrorInputsDirective {
   constructor(
     private templateRef: TemplateRef<any>,
     private viewContainer: ViewContainerRef,
-    private ngControl: NgControl
+    private ngControl: NgControl,
   ) {
     // Observa los cambios en el estado de validación del control de formulario.
     this.ngControl.statusChanges!.subscribe(() => this.updateView());

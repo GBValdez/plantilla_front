@@ -1,0 +1,234 @@
+.page-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #587865;
+  letter-spacing: 1.8px;
+  font-weight: 700;
+}
+.eyebrow::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: #81a56a;
+  border-radius: 50%;
+}
+h1 {
+  font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -1.3px;
+  margin: 12px 0;
+}
+.page-title p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+}
+.count {
+  color: #426a50;
+  background: #edf4e8;
+  border: 1px solid #dbe7d2;
+  padding: 9px 14px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.filter-panel {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+.results {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.user-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  gap: 18px;
+  padding: 24px;
+}
+mat-menu {
+  display: contents;
+}
+.user-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  min-height: 215px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    box-shadow 200ms,
+    border-color 200ms,
+    background-color 200ms;
+}
+.user-card::after {
+  content: "";
+  position: absolute;
+  top: 28px;
+  right: 22px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #9bb0a1;
+  box-shadow:
+    0 5px #9bb0a1,
+    0 10px #9bb0a1;
+}
+.user-card:hover {
+  border-color: #9ab69c;
+  box-shadow: 0 8px 22px #1c493510;
+  background: #fbfdf9;
+}
+.user-card:focus-visible {
+  outline: 2px solid #17614e;
+  outline-offset: 3px;
+}
+.user-name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  overflow-wrap: anywhere;
+}
+.user-email {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #eaf2df;
+  color: #53733a;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+.user-card:nth-of-type(3n + 2) .avatar {
+  background: #e5eff0;
+  color: #416871;
+}
+.user-card:nth-of-type(3n) .avatar {
+  background: #f3ecdf;
+  color: #856e45;
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #326947;
+  background: #eef6ed;
+  border: 1px solid #e0ecdb;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-top: auto;
+  font-size: 10px;
+  font-weight: 500;
+}
+.status::before {
+  content: "";
+  height: 4px;
+  width: 4px;
+  background: currentColor;
+  border-radius: 50%;
+}
+.status.inactive {
+  color: #805b3e;
+  background: #faf1e8;
+  border-color: #f1e1cf;
+}
+.empty-state {
+  padding: 56px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.empty-state > mat-icon {
+  width: 48px;
+  height: 48px;
+  font-size: 36px;
+  padding: 6px;
+  color: #668856;
+  background: #eff5e9;
+  border-radius: 14px;
+}
+.empty-state h2 {
+  font-size: 18px;
+  color: var(--ink);
+  margin-top: 20px;
+}
+.empty-state p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+@media (max-width: 1100px) {
+  .filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .filter-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .filter-panel {
+    padding: 22px 16px;
+  }
+  .count {
+    display: none;
+  }
+  .page-title {
+    margin-bottom: 24px;
+  }
+  .user-cards {
+    padding: 16px;
+    gap: 12px;
+  }
+  .user-card {
+    padding: 22px;
+    min-height: 205px;
+  }
+}

@@ -1,3 +1,6 @@
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { spanishPaginator } from '@utils/paginator-intl';
+import { ChangeDetectionStrategy } from '@angular/core';
 import {
   Component,
   Input,
@@ -25,6 +28,8 @@ import { clickType } from '@utils/side-menu/side-menu.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
+  providers: [{ provide: MatPaginatorIntl, useFactory: spanishPaginator }],
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-home-cms',
   standalone: true,
   imports: [
@@ -43,7 +48,7 @@ export class HomeCmsComponent {
   constructor(
     private dialog: MatDialog,
     private route: Router,
-    private routeAct: ActivatedRoute
+    private routeAct: ActivatedRoute,
   ) {}
   data: any[] = [];
   pageNumber: number = 0;

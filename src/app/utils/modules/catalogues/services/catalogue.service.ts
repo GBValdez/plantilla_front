@@ -21,7 +21,7 @@ export class CatalogueService {
     pageNumber: number,
     pageSize: number,
     query?: catalogueQuery,
-    all: boolean = true
+    all: boolean = true,
   ): Observable<pagDto<catalogueInterface>> {
     const params: any = fixedQueryParams({
       all,
@@ -33,28 +33,28 @@ export class CatalogueService {
       `${this.baseUrl}/${catalogue}`,
       {
         params,
-      }
+      },
     );
   }
 
   create(
     newCatalogue: catalogueInterface,
-    catalogue: string
+    catalogue: string,
   ): Observable<catalogueInterface> {
     return this.http.post<catalogueInterface>(
       `${this.baseUrl}/${catalogue}`,
-      newCatalogue
+      newCatalogue,
     );
   }
 
   update(
     id: string | number,
     catalogue: string,
-    newCatalogue: catalogueInterface
+    newCatalogue: catalogueInterface,
   ): Observable<catalogueInterface> {
     return this.http.put<catalogueInterface>(
       `${this.baseUrl}/${catalogue}/${id}`,
-      newCatalogue
+      newCatalogue,
     );
   }
 

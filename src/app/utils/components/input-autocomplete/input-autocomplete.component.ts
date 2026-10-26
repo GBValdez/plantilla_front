@@ -1,3 +1,4 @@
+import { ChangeDetectionStrategy } from '@angular/core';
 import {
   Component,
   EventEmitter,
@@ -29,6 +30,7 @@ import { MatInputModule } from '@angular/material/input';
 import { catalogueInterface } from '@utils/commons.interface';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-input-autocomplete',
   standalone: true,
   imports: [
@@ -45,15 +47,17 @@ export class InputAutocompleteComponent
 {
   constructor(
     private fb: FormBuilder,
-    @Optional() @Self() private ngControl: NgControl
+    @Optional() @Self() private ngControl: NgControl,
   ) {
     if (this.ngControl) this.ngControl.valueAccessor = this;
   }
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['options'] && this.pendingValue !== undefined) {
+      this.writeValue(this.pendingValue);
+    }
     if (this.noFilter)
       if (changes['options']) {
         this.optionsFilter = this.options;
-        console.log(this.optionsFilter);
       }
   }
 
@@ -70,14 +74,18 @@ export class InputAutocompleteComponent
   showErrors() {}
   onTouch?: Function;
   onWrite?: Function;
+  private pendingValue?: string | number;
 
-  writeValue(value: number): void {
-    setTimeout(() => {
-      const opt: catalogueInterface = this.options.find(
-        (option) => option.id == value
-      )!;
-      this.form.patchValue(opt);
-    }, 10);
+  writeValue(value: string | number | catalogueInterface | null): void {
+    const option =
+      value && typeof value === 'object'
+        ? value
+        : this.options.find((option) => option.id == value);
+    this.pendingValue =
+      !option && value !== null && value !== '' && typeof value !== 'object'
+        ? value
+        : undefined;
+    this.form.setValue(option ?? '', { emitEvent: false });
   }
   registerOnChange(fn: any): void {
     this.onWrite = fn;
@@ -97,13 +105,13 @@ export class InputAutocompleteComponent
   }
 
   filter(event: FocusEvent | Event): void {
-    console.log('filter', this.optionsFilter);
+    if (event.type === 'input') this.pendingValue = undefined;
     setTimeout(() => {
       const value = (event.target as HTMLInputElement).value;
       this.writingEvent.emit(value);
       this.currentValue = value;
       const optConst: string | number | undefined = this.options.find(
-        (opt) => opt.name.toLowerCase() === value.toLowerCase()
+        (opt) => opt.name.toLowerCase() === value.toLowerCase(),
       )?.id;
       if (optConst) {
         this.onWrite?.(optConst);
@@ -111,7 +119,7 @@ export class InputAutocompleteComponent
         this.onWrite?.('');
         if (!this.noFilter)
           this.optionsFilter = this.options.filter((opt) =>
-            opt.name.toLowerCase().includes(value.toLowerCase())
+            opt.name.toLowerCase().includes(value.toLowerCase()),
           );
         else this.optionsFilter = this.options;
       }
@@ -126,7 +134,8 @@ export class InputAutocompleteComponent
     setTimeout(async () => {
       if (this.currentValue.trim().length == 0) return;
       const opt: catalogueInterface | undefined = this.options.find(
-        (option) => option.name.toLowerCase() == this.currentValue.toLowerCase()
+        (option) =>
+          option.name.toLowerCase() == this.currentValue.toLowerCase(),
       );
       if (!opt) {
         this.noExistOptionEvent.emit(this.currentValue);
@@ -138,7 +147,9 @@ export class InputAutocompleteComponent
     }, 70);
   }
   selected(event: MatAutocompleteSelectedEvent): void {
-    this.selectedEvent.emit(event.option.value);
+    this.pendingValue = undefined;
     this.onWrite?.(event.option.value);
+    this.onTouch?.();
+    this.selectedEvent.emit(event.option.value);
   }
 }

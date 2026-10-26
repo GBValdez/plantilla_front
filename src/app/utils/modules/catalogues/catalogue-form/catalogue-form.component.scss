@@ -1,5 +1,37 @@
-h2 {
+:host {
+  display: block;
+}
+mat-card {
+  background: #fff;
+  padding: 8px;
+}
+mat-card-header {
+  padding: 24px 24px 0;
+}
+mat-card-content {
+  padding: 0 24px 24px;
+}
+.title {
+  font-size: 25px !important;
+  margin-bottom: 26px !important;
+}
+form > div:last-child {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  gap: 8px;
+}
+form > div:last-child button {
   margin: 0;
-  margin-bottom: 5px;
-  font-weight: bold;
+}
+@media (max-width: 599px) {
+  mat-card {
+    padding: 0;
+  }
+  mat-card-header {
+    padding: 22px 18px 0;
+  }
+  mat-card-content {
+    padding: 0 18px 22px;
+  }
 }

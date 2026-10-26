@@ -1,52 +1,66 @@
-import { Inject, Injectable, OnInit, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 import { authUserInterface } from '@auth/interface/auth.inteface';
-import { environment } from '@env/environment';
 import { LocalStorageService } from '@utils/local-storage.service';
-import { AES, enc } from 'crypto-js';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
+  readonly authObs = new BehaviorSubject<authUserInterface | null>(null);
   constructor(
-    // private cookiesSvc: CookieService,
-    @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
-    private localStorageSvc: LocalStorageService
-  ) {}
-  authObs: BehaviorSubject<authUserInterface | null> =
-    new BehaviorSubject<authUserInterface | null>(null);
-
+    private storage: LocalStorageService,
+  ) {
+    this.authObs.next(this.getAuth());
+  }
   getObservable(): Observable<authUserInterface | null> {
     return this.authObs.asObservable();
   }
-  nextAuth(auth: authUserInterface | null) {
+  nextAuth(auth: authUserInterface | null): void {
     this.authObs.next(auth);
   }
-
   hasAuth(): boolean {
-    return this.localStorageSvc.hasItem('auth');
+    return this.getAuth() !== null;
   }
-
-  setAuth(newAuth: authUserInterface) {
-    this.localStorageSvc.setItem('auth', newAuth, 1);
-    this.authObs.next(newAuth);
+  setAuth(auth: authUserInterface): void {
+    const roles = Array.isArray(auth.roles)
+      ? auth.roles
+      : [auth.roles].filter(Boolean);
+    this.storage.setItem('auth', { ...auth, roles }, 1);
+    this.authObs.next(this.getAuth());
   }
   getAuth(): authUserInterface | null {
-    return this.localStorageSvc.getItem('auth');
+    const auth = this.storage.getItem<authUserInterface>('auth');
+    if (!auth) return null;
+    try {
+      const claims = jwtDecode<{ exp?: number }>(auth.token);
+      if (
+        !claims.exp ||
+        claims.exp * 1000 <= Date.now() ||
+        !Number.isFinite(new Date(auth.expiration).getTime()) ||
+        new Date(auth.expiration).getTime() <= Date.now()
+      )
+        throw new Error('expired');
+      return {
+        ...auth,
+        roles: Array.isArray(auth.roles)
+          ? auth.roles
+          : [auth.roles].filter(Boolean),
+      };
+    } catch {
+      this.storage.removeItem('auth');
+      if (this.authObs.value) this.authObs.next(null);
+      return null;
+    }
   }
-  logout() {
-    this.localStorageSvc.removeItem('auth');
+  logout(): void {
+    this.storage.removeItem('auth');
     this.authObs.next(null);
-    this.router.navigate(['/login']);
+    void this.router.navigate(['/login']);
   }
   hasRoles(roles: string[]): boolean {
     const auth = this.getAuth();
-    if (!auth) {
-      return false;
-    }
-    return roles.some((role) => auth.roles.includes(role));
+    return !!auth && roles.some((role) => auth.roles.includes(role));
   }
 }

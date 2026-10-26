@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+mat-card {
+  border: 0;
+  box-shadow: none;
+  background: #fff;
+}
+mat-card-header {
+  padding: 12px 0 8px;
+}
+mat-card-content {
+  padding: 0;
+}
+.title {
+  font-size: 25px !important;
+  margin-bottom: 24px !important;
+}
+mat-card-content section > div:last-child {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  gap: 8px;
+}
+mat-card-content section > div:last-child button {
+  margin: 0;
+}

@@ -4,19 +4,13 @@
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
-    "baseUrl": "./",
+
     "paths": {
-      "@utils/*": ["src/app/utils/*"],
-      "@auth/*": ["src/app/utils/modules/auth/*"],
-      "@user/*": ["src/app/utils/modules/user/*"],
-      "@catalogues/*": ["src/app/utils/modules/catalogues/*"],
-      "@providersModule/*": ["src/app/providersModule/*"],
-      "@product/*": ["src/app/products/*"],
-      "@station/*": ["src/app/station/*"],
-      "@drivers/*": ["src/app/drivers/*"],
-      "@env/*": ["src/environments/*"],
-      "@orders/*": ["src/app/orders/*"],
-      "@devices/*": ["src/app/devices/*"]
+      "@utils/*": ["./src/app/utils/*"],
+      "@auth/*": ["./src/app/utils/modules/auth/*"],
+      "@user/*": ["./src/app/utils/modules/user/*"],
+      "@catalogues/*": ["./src/app/utils/modules/catalogues/*"],
+      "@env/*": ["./src/environments/*"]
     },
     "strict": true,
     "noImplicitOverride": true,

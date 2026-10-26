@@ -16,7 +16,7 @@ export class LoginService {
   login(credentials: loginInterface): Observable<responseLoginInterface> {
     return this.http.post<responseLoginInterface>(
       `${this.urlBase}/user/login`,
-      credentials
+      credentials,
     );
   }
 }

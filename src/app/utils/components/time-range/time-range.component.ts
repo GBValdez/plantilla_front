@@ -1,3 +1,4 @@
+import { ChangeDetectionStrategy } from '@angular/core';
 import { Component, OnInit, Optional, Self } from '@angular/core';
 import {
   AbstractControl,
@@ -16,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { TimeRangeInterface } from './time-range.interface';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-time-range',
   standalone: true,
   imports: [
@@ -30,7 +32,7 @@ import { TimeRangeInterface } from './time-range.interface';
 export class TimeRangeComponent implements ControlValueAccessor, OnInit {
   constructor(
     @Optional() @Self() private ngControl: NgControl,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {
     if (this.ngControl) this.ngControl.valueAccessor = this;
   }
@@ -78,7 +80,7 @@ export class TimeRangeComponent implements ControlValueAccessor, OnInit {
       },
       {
         validators: this.rangeForm(),
-      }
+      },
     );
   }
 

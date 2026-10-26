@@ -1,32 +1,354 @@
+@use "@angular/material" as mat;
+@import "@fontsource/inter/latin-400.css";
+@import "@fontsource/inter/latin-500.css";
+@import "@fontsource/inter/latin-600.css";
+@import "@fontsource/inter/latin-700.css";
+@import "@fontsource/material-icons/index.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-// body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
+$theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$green-palette,
+    ),
+    typography: (
+      brand-family: "Inter, sans-serif",
+      plain-family: "Inter, sans-serif",
+    ),
+  )
+);
+html {
+  @include mat.all-component-themes($theme);
+  @include mat.form-field-overrides(
+    (
+      filled-container-color: #f5f8f6,
+      filled-container-shape: 12px,
+      filled-active-indicator-color: #82968b,
+      filled-hover-active-indicator-color: #547568,
+      filled-focus-active-indicator-color: #17614e,
+      filled-focus-label-text-color: #17614e,
+      filled-label-text-color: #566d62,
+      filled-input-text-color: #193c30,
+      outlined-container-shape: 12px,
+      outlined-outline-color: #82968b,
+      outlined-hover-outline-color: #547568,
+      outlined-focus-outline-color: #17614e,
+      outlined-focus-label-text-color: #17614e,
+      outlined-label-text-color: #566d62,
+      outlined-input-text-color: #193c30,
+      leading-icon-color: #607d6e,
+      container-text-size: 15px,
+      filled-label-text-size: 15px,
+      outlined-label-text-size: 15px,
+    )
+  );
+  @include mat.button-overrides(
+    (
+      filled-container-shape: 12px,
+      filled-container-color: #17614e,
+      filled-label-text-color: #fff,
+      outlined-container-shape: 12px,
+      outlined-label-text-color: #17614e,
+      outlined-outline-color: #b6c9be,
+      protected-container-shape: 12px,
+      protected-container-color: #fff,
+      protected-label-text-color: #17614e,
+      protected-container-elevation-shadow: none,
+      protected-hover-container-elevation-shadow: 0 4px 12px #173d3010,
+      text-container-shape: 10px,
+      text-label-text-color: #17614e,
+    )
+  );
+  @include mat.card-overrides(
+    (
+      elevated-container-color: #fff,
+      elevated-container-shape: 20px,
+      elevated-container-elevation: 0 4px 24px #1c493508,
+      outlined-container-shape: 20px,
+      outlined-outline-color: #e0e9e3,
+      subtitle-text-color: #5b7065,
+      title-text-weight: 600,
+    )
+  );
+  @include mat.dialog-overrides(
+    (
+      container-shape: 24px,
+      container-color: #fff,
+      container-elevation-shadow: 0 24px 100px #0b312934,
+      subhead-color: #193c30,
+      subhead-weight: 600,
+      supporting-text-color: #5b7065,
+    )
+  );
+  @include mat.menu-overrides(
+    (
+      container-shape: 16px,
+      container-color: #fff,
+      container-elevation-shadow: 0 12px 40px #173d3020,
+      item-label-text-color: #193c30,
+      item-icon-color: #537461,
+      item-hover-state-layer-color: #eff6f1,
+      item-focus-state-layer-color: #e4f0e8,
+    )
+  );
+  @include mat.select-overrides(
+    (
+      panel-background-color: #fff,
+      enabled-trigger-text-color: #193c30,
+      focused-arrow-color: #17614e,
+    )
+  );
+  @include mat.autocomplete-overrides(
+    (
+      container-shape: 14px,
+      background-color: #fff,
+      container-elevation-shadow: 0 10px 36px #173d301c,
+    )
+  );
+  @include mat.paginator-overrides(
+    (
+      container-background-color: #fff,
+      container-text-color: #536c60,
+      enabled-icon-color: #17614e,
+    )
+  );
+}
+:root {
+  color-scheme: light;
+  --brand: #17614e;
+  --brand-dark: #113c30;
+  --brand-soft: #edf5ef;
+  --accent: #d5ed9d;
+  --ink: #193c30;
+  --muted: #5b7065;
+  --surface: #fff;
+  --canvas: #f4f7f5;
+  --line: #e0e9e3;
+  --shadow: 0 8px 32px #173d3008;
+  --radius: 20px;
+}
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+body {
+  font-family: Inter, "Helvetica Neue", sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+summary {
+  touch-action: manipulation;
+}
+button,
+a {
+  -webkit-tap-highlight-color: #17614e18;
+}
+a {
+  color: var(--brand);
+}
+::selection {
+  background: #d6e9c5;
+  color: #173d30;
+}
+:focus-visible {
+  outline: 3px solid #3b896b;
+  outline-offset: 4px;
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
 .title {
-    font-weight: bold !important;
-    font-size: 30px !important;
-    color: rgb(255, 77, 13);
-    margin: 0 !important;
-    padding: 0  !important;
+  font-size: clamp(25px, 2.6vw, 34px) !important;
+  font-weight: 600 !important;
+  color: var(--ink);
+  margin: 0 0 28px !important;
+  letter-spacing: -1.1px;
+  line-height: 1.22 !important;
 }
-
 .titleItem {
-    font-weight: bold !important;
-    font-size: 20px !important;
-    color: rgb(255, 77, 13);
-    margin: 0 !important;
-    padding: 0 !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: var(--ink);
+  letter-spacing: -0.35px;
 }
-
-  
 .subtitleItem {
-    font-weight: bold !important;
-    font-size: 15px !important;
-    color: rgb(255, 77, 13);
-    margin: 0 !important;
-    padding: 0 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--brand);
+}
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  font-size: 24px;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+mat-card {
+  border: 1px solid var(--line);
+}
+mat-card-header {
+  padding: 24px 24px 0;
+}
+mat-card-content {
+  color: var(--ink);
+}
+mat-card-subtitle {
+  line-height: 1.65;
+}
+button[mat-raised-button],
+button[mat-flat-button],
+button[mat-stroked-button],
+button[mat-button],
+a[mat-button] {
+  min-height: 44px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+}
+button[mat-raised-button] {
+  border: 1px solid var(--line);
+}
+button[mat-raised-button][color="primary"] {
+  --mat-button-protected-container-color: var(--brand);
+  --mat-button-protected-label-text-color: #fff;
+  border-color: transparent;
+}
+button[mat-raised-button][color="warn"] {
+  --mat-button-protected-container-color: #fff;
+  --mat-button-protected-label-text-color: #536c60;
+}
+mat-paginator {
+  border-top: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+  padding: 8px 12px;
+}
+.mat-mdc-menu-panel {
+  border: 1px solid var(--line);
+  padding: 4px;
+}
+.mat-mdc-dialog-surface {
+  border: 1px solid #e3ebe5;
+}
+.mat-mdc-dialog-content {
+  overscroll-behavior: contain;
+}
+.mat-mdc-dialog-surface mat-card {
+  border: 0;
+  box-shadow: none;
+}
+.cdk-overlay-backdrop.cdk-overlay-dark-backdrop {
+  background: #102f2959;
+}
+div.swal2-popup {
+  font-family: inherit;
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  padding: 28px;
+  box-shadow: 0 24px 100px #0b312934;
+}
+div.swal2-popup .swal2-title {
+  color: var(--ink);
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.35;
+  padding: 16px 0 0;
+  letter-spacing: -0.6px;
+}
+div.swal2-popup .swal2-html-container {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 16px 0 0;
+}
+div.swal2-popup .swal2-actions {
+  gap: 10px;
+  margin-top: 28px;
+}
+div.swal2-popup button.swal2-styled {
+  border-radius: 11px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  padding: 11px 22px;
+}
+div.swal2-popup button.swal2-confirm {
+  background: var(--brand);
+  color: #fff;
+}
+div.swal2-popup button.swal2-cancel {
+  background: #f0f4f1;
+  color: #3f594b;
+}
+div.swal2-popup button.swal2-styled:focus-visible {
+  outline: 3px solid #3b896b;
+  outline-offset: 4px;
+  box-shadow: none;
+}
+body:not(:has(app-side-menu)) {
+  --sidebar-notice-offset: 0px;
+}
+@media (min-width: 600px) {
+  body:has(app-side-menu nav:not(.navCollapse)) .demo-notice {
+    margin-left: 300px;
+  }
+}
+@media (max-width: 599px) {
+  html {
+    @include mat.form-field-overrides(
+      (
+        container-text-size: 16px,
+      )
+    );
+  }
+  mat-card-header {
+    padding: 20px 18px 0;
+  }
+  mat-paginator {
+    padding: 8px 0;
+  }
+  .title {
+    letter-spacing: -0.6px;
+  }
+  div.swal2-popup {
+    padding: 24px 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

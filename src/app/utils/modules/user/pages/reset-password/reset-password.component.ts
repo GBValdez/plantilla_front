@@ -1,3 +1,5 @@
+import { finalize } from 'rxjs';
+import { ChangeDetectionStrategy } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -16,6 +18,7 @@ import { UserService } from '@user/services/user.service';
 import Swal from 'sweetalert2';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-reset-password',
   standalone: true,
   imports: [
@@ -43,7 +46,7 @@ export class ResetPasswordComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private activateRoute: ActivatedRoute,
-    private userSvc: UserService
+    private userSvc: UserService,
   ) {}
   gmail: string = '';
   token: string = '';
@@ -55,40 +58,47 @@ export class ResetPasswordComponent implements OnInit {
           '',
           [
             Validators.pattern(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/,
             ),
             Validators.required,
           ],
         ],
         confirmPassword: ['', [Validators.required]],
       },
-      { validators: this.passwordEqual.bind(this) }
+      { validators: this.passwordEqual.bind(this) },
     );
     this.gmail = this.activateRoute.snapshot.params['gmail'];
     this.token = this.activateRoute.snapshot.params['token'];
   }
-  async resetPassword() {
-    if (this.form.valid) {
-      const res = await Swal.fire({
-        title: '¿Estás seguro?',
-        text: '¿Deseas cambiar tu contraseña?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'No',
-      });
-      if (res.isConfirmed) {
-        this.userSvc
-          .resetPassword(this.token, this.gmail, this.form.value.password!)
-          .subscribe((res) => {
-            Swal.fire({
-              title: 'Contraseña cambiada',
-              text: 'Tu contraseña ha sido cambiada con éxito',
-              icon: 'success',
-            });
-            this.router.navigate(['/login']);
-          });
-      }
+  submitting = false;
+  async resetPassword(): Promise<void> {
+    if (this.submitting) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
+    this.submitting = true;
+    const confirmation = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Deseas cambiar tu contraseña?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No',
+    });
+    if (!confirmation.isConfirmed) {
+      this.submitting = false;
+      return;
+    }
+    this.userSvc
+      .resetPassword(this.token, this.gmail, this.form.value.password)
+      .pipe(finalize(() => (this.submitting = false)))
+      .subscribe({
+        next: () => {
+          void Swal.fire({ title: 'Contraseña actualizada', icon: 'success' });
+          void this.router.navigate(['/login']);
+        },
+        error: () => {},
+      });
   }
 }

@@ -8,9 +8,8 @@ describe('HomeCmsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HomeCmsComponent]
-    })
-    .compileComponents();
+      imports: [HomeCmsComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HomeCmsComponent);
     component = fixture.componentInstance;

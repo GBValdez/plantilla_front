@@ -1,63 +1,84 @@
 ul {
   list-style: none;
-}
-mat-icon {
-  margin-left: 10px;
-  font-size: 30px;
-  height: 30px;
-  color: white;
-}
-.listOptions {
   padding: 0;
   margin: 0;
 }
-
-.item {
-  list-style: none;
-  color: rgb(255, 255, 255);
+li {
+  margin: 5px 0;
+}
+a,
+button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   width: 100%;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  box-sizing: content-box;
-  font-weight: bold;
-  cursor: pointer;
-  margin: 3px 0;
-  padding: 7px 0;
-}
-.itemSelect {
-  color: rgb(255, 255, 255);
-  background: #5c5c5c;
-}
-
-.iconItem {
-  width: 90px;
-  display: flex;
-  align-items: center;
-  height: 100%;
+  min-height: 46px;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #c5dace;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
   text-align: left;
-  white-space: normal;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 200ms,
+    color 200ms,
+    box-shadow 200ms;
+}
+a:hover,
+button:hover {
+  background: #ffffff0b;
+  color: #fff;
+}
+a.selected,
+button.selected {
+  background: #d5ed9d;
+  color: #173d30;
+  box-shadow: 0 4px 14px #061e1918;
+}
+mat-icon {
+  font-size: 22px;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+}
+.label {
+  flex: 1;
+  white-space: nowrap;
   animation: fadeIn 0.5s ease-in-out;
 }
-
-.iconItem-collapse {
-  width: 100%;
+.chevron {
+  margin-left: auto;
+  font-size: 18px;
+  transition: transform 200ms ease-in;
 }
-
-.descItem {
-  width: 190px;
-  display: flex;
-  align-items: center;
-  word-break: break-word;
-  white-space: normal;
-  animation: fadeIn 0.5s ease-in-out;
+.chevron.open {
+  transform: rotate(180deg);
 }
-.child {
-  width: 50px;
-  position: absolute;
-  right: 10px;
+.children {
+  margin-left: 22px;
+  border-left: 1px solid #bfd8c52b;
+  padding-left: 6px;
 }
-
+.children[hidden] {
+  display: none;
+}
+.children a,
+.children button {
+  min-height: 44px;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #d5ed9d;
+  outline-offset: -2px;
+}
+.selected:focus-visible {
+  outline-color: #fff;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -65,8 +86,4 @@ mat-icon {
   to {
     opacity: 1;
   }
-}
-
-.hiddenButton {
-  display: none;
 }

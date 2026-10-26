@@ -1,5 +1,12 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { authUserInterface } from '@auth/interface/auth.inteface';
 import { AuthService } from '@auth/services/auth.service';
@@ -9,6 +16,7 @@ import { sideMenuInterface } from '@utils/side-menu/side-menu.interface';
 import Swal from 'sweetalert2';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-general-menu',
   standalone: true,
   imports: [SideMenuComponent, RouterModule, NgClass],
@@ -16,11 +24,15 @@ import Swal from 'sweetalert2';
   styleUrl: './general-menu.component.scss',
 })
 export class GeneralMenuComponent implements OnInit {
+  private readonly destroy = inject(DestroyRef);
   constructor(private auth: AuthService) {}
   ngOnInit(): void {
-    this.auth.getObservable().subscribe((res) => {
-      this.setPermission(res);
-    });
+    this.auth
+      .getObservable()
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe((res) => {
+        this.setPermission(res);
+      });
     this.setPermission(this.auth.getAuth());
   }
 

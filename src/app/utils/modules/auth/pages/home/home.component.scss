@@ -1,16 +1,354 @@
-h2 {
-  font-size: 40px;
-  color: white;
-  font-weight: bold;
-  text-align: center;
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+.login-layout {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.welcome-panel {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(32px, 4vw, 64px) 11%;
+  color: #fff;
+  background: #123b30;
+  isolation: isolate;
+}
+.welcome-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 0% 100%, #376f4a80, transparent 65%),
+    linear-gradient(155deg, #ffffff04, #061e191c);
+}
+.welcome-panel::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: -95px;
+  bottom: 8%;
+  border: 1px solid #d5ed9d26;
+  border-radius: 36px;
+  transform: rotate(-24deg);
+  z-index: -1;
+  box-shadow:
+    0 0 0 32px #d5ed9d05,
+    0 0 0 64px #d5ed9d04;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+  position: relative;
+}
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: var(--accent);
+  color: #173d30;
+  border: 1px solid #ffffff26;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px #061e1926;
+}
+.brand-mark mat-icon {
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+}
+.welcome-copy {
+  margin: auto 0;
+  padding: 72px 0;
+  position: relative;
+}
+.eyebrow,
+.section-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+.eyebrow {
+  color: #d5ed9d;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+}
+h1 {
+  font-size: clamp(42px, 4.4vw, 68px);
+  line-height: 1.12;
+  font-weight: 500;
+  letter-spacing: -2.6px;
+  margin: 25px 0;
+}
+h1 span {
+  color: #d5ed9d;
+}
+.welcome-copy > p {
+  max-width: 360px;
+  color: #c0d4c9;
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 40px;
+}
+.feature {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-top: 24px;
+}
+.feature > mat-icon {
+  color: #d5ed9d;
+  padding: 12px;
+  width: 48px;
+  height: 48px;
+  background: #ffffff08;
+  border: 1px solid #ffffff10;
+  border-radius: 14px;
+}
+.feature strong,
+.feature span {
+  display: block;
+}
+.feature strong {
+  font-weight: 500;
+  font-size: 14px;
+  margin: 0 0 5px;
+}
+.feature span,
+.welcome-footer {
+  color: #c0d4c9;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.welcome-footer {
+  letter-spacing: 0.1px;
+}
+.orbit {
+  position: absolute;
+  width: 470px;
+  height: 470px;
+  border-radius: 50%;
+  border: 1px solid #d5ed9d12;
+  pointer-events: none;
+  z-index: -1;
+}
+.orbit-one {
+  right: -260px;
+  top: -220px;
+}
+.orbit-two {
+  right: -195px;
+  top: -155px;
+}
+.form-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 8% 24px;
+  background:
+    radial-gradient(ellipse at 100% 0%, #e8f0e580, transparent 65%), #f7f9f6;
+}
+.login-card {
   width: 100%;
+  max-width: 460px;
+  margin: auto;
+  padding: 36px;
+  border: 1px solid #e4ebe4;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow:
+    0 12px 56px #244d3210,
+    0 2px 6px #244d3204;
 }
-h3 {
-  font-size: 25px;
-  color: #c2410c;
-  font-weight: bold;
+.section-label {
+  color: #557363;
+  display: inline-block;
+  padding: 7px 10px;
+  background: #f0f6ee;
+  border: 1px solid #e2ecdf;
+  border-radius: 6px;
+  letter-spacing: 1.4px;
+  font-size: 9px;
 }
-p {
-  margin: 0;
+h2 {
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -1.1px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 22px 0 12px;
+}
+.intro {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+mat-form-field {
+  margin-bottom: 6px;
+}
+mat-icon[matPrefix] {
+  color: #6c8778;
+  font-size: 21px;
+}
+.recovery {
+  text-align: right;
+  margin: -4px 0 20px;
+  font-size: 12px;
+}
+.text-button {
+  border: 0;
+  padding: 6px 0;
+  background: transparent;
+  color: var(--brand);
+  font: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: color 180ms;
+}
+.text-button:hover {
+  color: #113e2d;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.submit-button {
+  width: 100%;
+  min-height: 50px;
+  border-radius: 12px;
+  box-shadow: 0 5px 16px #17614e18;
+}
+.signup {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  margin: 22px 0 12px;
+}
+.login-note {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #61776a;
+  font-size: 11px;
+}
+.login-note mat-icon {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+  color: #4c7c61;
+}
+.login-card > button[dtBtnUploadFile] {
+  display: block;
+  margin: 10px auto -12px;
+  font-size: 11px;
+  color: #5b7065;
+}
+.form-footer {
+  font-size: 11px;
+  color: #63796a;
+  margin-top: 24px;
+  letter-spacing: 0.2px;
+}
+.form-error {
+  color: #ae4037;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff2ef;
+}
+.demo-credentials {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 22px;
+  padding: 13px 14px;
+  background: #f3f7ed;
+  border: 1px solid #dce8d1;
+  border-left: 3px solid #8fb568;
+  border-radius: 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #38543d;
+  overflow-wrap: anywhere;
+}
+.demo-credentials strong {
   margin-bottom: 3px;
+  font-size: 11px;
+}
+.demo-credentials code {
+  user-select: all;
+  font-size: 11px;
+}
+@media (max-width: 1050px) and (min-width: 761px) {
+  .welcome-panel {
+    padding-inline: 9%;
+  }
+  .form-panel {
+    padding-inline: 6%;
+  }
+  .login-card {
+    padding: 28px;
+  }
+}
+@media (max-width: 760px) {
+  .login-layout {
+    grid-template-columns: 1fr;
+  }
+  .welcome-panel {
+    padding: 22px 26px;
+  }
+  .welcome-copy,
+  .welcome-footer,
+  .orbit {
+    display: none;
+  }
+  .welcome-panel::after {
+    display: none;
+  }
+  .brand {
+    font-size: 21px;
+  }
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+  .form-panel {
+    padding: 28px 18px 24px;
+    min-height: calc(100dvh - 82px);
+  }
+  .login-card {
+    padding: 28px 22px;
+    border-radius: 20px;
+  }
+  h2 {
+    font-size: 29px;
+  }
+  .intro {
+    font-size: 13px;
+  }
 }

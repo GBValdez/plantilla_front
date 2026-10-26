@@ -35,14 +35,14 @@ export class CommonsSvcService<dto, dtoCreation> {
   }
   getById<queryParam>(
     id: number,
-    opts?: pagOptions<queryParam>
+    opts?: pagOptions<queryParam>,
   ): Observable<dto> {
     const PARAMS = this.fixedQueryParams<queryParam>(opts);
     return this.http.get<dto>(`${this.urlBase}/${id}`, { params: PARAMS });
   }
   post<queryParam>(
     body: dtoCreation,
-    opts?: pagOptions<queryParam>
+    opts?: pagOptions<queryParam>,
   ): Observable<dto> {
     const PARAMS = this.fixedQueryParams<queryParam>(opts);
     return this.http.post<dto>(this.urlBase, body, { params: PARAMS });
@@ -50,7 +50,7 @@ export class CommonsSvcService<dto, dtoCreation> {
   put<queryParam>(
     id: number,
     body: dtoCreation,
-    opts?: pagOptions<queryParam>
+    opts?: pagOptions<queryParam>,
   ): Observable<dto> {
     const PARAMS = this.fixedQueryParams<queryParam>(opts);
     return this.http.put<dto>(`${this.urlBase}/${id}`, body, {
@@ -59,7 +59,7 @@ export class CommonsSvcService<dto, dtoCreation> {
   }
   delete<queryParam>(
     id: number,
-    opts?: pagOptions<queryParam>
+    opts?: pagOptions<queryParam>,
   ): Observable<dto> {
     const PARAMS = this.fixedQueryParams<queryParam>(opts);
     return this.http.delete<dto>(`${this.urlBase}/${id}`, { params: PARAMS });
@@ -67,7 +67,7 @@ export class CommonsSvcService<dto, dtoCreation> {
 
   postGroup<queryParam>(
     body: dtoCreation[],
-    opts?: pagOptions<queryParam>
+    opts?: pagOptions<queryParam>,
   ): Observable<dto[]> {
     const PARAMS = this.fixedQueryParams<queryParam>(opts);
     return this.http.post<dto[]>(`${this.urlBase}/group`, body, {

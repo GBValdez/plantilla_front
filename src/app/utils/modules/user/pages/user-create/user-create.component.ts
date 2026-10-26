@@ -1,3 +1,7 @@
+import { finalize } from 'rxjs';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
+import { APP_DATE_FORMATS } from '@utils/formatDate';
+import { ChangeDetectionStrategy } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -19,6 +23,8 @@ import { Moment } from 'moment';
 import Swal from 'sweetalert2';
 
 @Component({
+  providers: [provideMomentDateAdapter(APP_DATE_FORMATS)],
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-user-create',
   standalone: true,
   imports: [
@@ -39,7 +45,7 @@ export class UserCreateComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private userSvc: UserService,
-    private dialogRef: MatDialogRef<UserCreateComponent>
+    private dialogRef: MatDialogRef<UserCreateComponent>,
   ) {}
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -53,7 +59,7 @@ export class UserCreateComponent implements OnInit {
         [
           Validators.required,
           Validators.pattern(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/,
           ),
         ],
       ],
@@ -77,25 +83,40 @@ export class UserCreateComponent implements OnInit {
 
   form!: FormGroup;
 
-  async createUser() {
-    const ALERT = await Swal.fire({
+  submitting = false;
+  async createUser(): Promise<void> {
+    if (this.submitting) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.submitting = true;
+    const confirmation = await Swal.fire({
       title: '¿Estas seguro de continuar?',
       showCancelButton: true,
-      confirmButtonText: `Guardar`,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
       icon: 'question',
     });
-    if (ALERT.isConfirmed)
-      if (this.form.valid) {
-        const DATA = this.form.value;
-        DATA.birthdate = new Date(DATA.birthdate).toISOString().split('T')[0];
-        this.userSvc.createUser(DATA).subscribe((res) => {
-          Swal.fire({
-            title: 'Usuario creado',
-            text: 'Se ha enviado un correo de verificación a su email para activar su cuenta de usuario en la aplicación. Por favor, revise su bandeja de entrada',
+    if (!confirmation.isConfirmed) {
+      this.submitting = false;
+      return;
+    }
+    const data = { ...this.form.getRawValue() };
+    data.birthdate = data.birthdate.format('YYYY-MM-DD');
+    this.userSvc
+      .createUser(data)
+      .pipe(finalize(() => (this.submitting = false)))
+      .subscribe({
+        next: () => {
+          this.dialogRef.close();
+          void Swal.fire({
+            title: 'Cuenta creada',
+            text: 'Revisa tu correo y confirma tu cuenta antes de iniciar sesión.',
             icon: 'success',
           });
-          this.dialogRef.close();
-        });
-      } else this.form.markAllAsTouched();
+        },
+        error: () => {},
+      });
   }
 }

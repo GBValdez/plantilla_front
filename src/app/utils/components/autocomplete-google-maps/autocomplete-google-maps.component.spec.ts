@@ -8,9 +8,8 @@ describe('AutocompleteGoogleMapsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AutocompleteGoogleMapsComponent]
-    })
-    .compileComponents();
+      imports: [AutocompleteGoogleMapsComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AutocompleteGoogleMapsComponent);
     component = fixture.componentInstance;

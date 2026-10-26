@@ -22,7 +22,7 @@ export class BtnUploadFileDirective implements AfterViewInit, OnChanges {
   constructor(
     private elementRef: ElementRef<HTMLButtonElement>,
     // private toast: MatSnackBar,
-    private renderer: Renderer2
+    private renderer: Renderer2,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -80,7 +80,7 @@ export class BtnUploadFileDirective implements AfterViewInit, OnChanges {
     $event.preventDefault();
     this.filesLeave.emit();
   }
-  @HostListener('click', ['$event']) onClick($event: DragEvent) {
+  @HostListener('click') onClick() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = this.typesPermitted;
@@ -108,22 +108,22 @@ export class BtnUploadFileDirective implements AfterViewInit, OnChanges {
         if (this.file.length == 1) {
           this.renderer.setProperty(
             this.elementRef.nativeElement,
-            'innerHTML',
-            this.file.item(0)?.name || ''
+            'textContent',
+            this.file.item(0)?.name || '',
           );
         }
         if (this.file.length > 1) {
           this.renderer.setProperty(
             this.elementRef.nativeElement,
-            'innerHTML',
-            `${this.file.length} archivos seleccionados`
+            'textContent',
+            `${this.file.length} archivos seleccionados`,
           );
         }
       } else {
         this.renderer.setProperty(
           this.elementRef.nativeElement,
           'innerHTML',
-          this.originalText
+          this.originalText,
         );
       }
   }

@@ -1,3 +1,4 @@
+import { ChangeDetectionStrategy } from '@angular/core';
 import {
   Component,
   effect,
@@ -26,6 +27,7 @@ import { dtoToCreationDto } from '@utils/utils';
 import Swal from 'sweetalert2';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-form-cms',
   standalone: true,
   imports: [

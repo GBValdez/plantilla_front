@@ -1,87 +1,49 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
-import { AES, enc, SHA256 } from 'crypto-js';
-import { localStorExp } from './commons.interface';
 
-@Injectable({
-  providedIn: 'root',
-})
+// Browser storage is not a security boundary. API authorization validates every request.
+@Injectable({ providedIn: 'root' })
 export class LocalStorageService {
-  constructor() {}
-  private KEY_EXP: string = 'expLocalStorage';
-  setItem<t>(key: string, value: t, timeDay?: number): void {
-    const KEY_HASH = SHA256(key).toString();
-    const VALUE_ENCRYPTED = AES.encrypt(
-      JSON.stringify(value),
-      environment.key
-    ).toString();
-    this.configureExp(key, timeDay);
-    localStorage.setItem(KEY_HASH, VALUE_ENCRYPTED);
+  private readonly prefix = environment.demo ? 'plantilla-demo:' : 'plantilla:';
+  setItem<T>(key: string, value: T, timeDay?: number): void {
+    const expires = timeDay ? Date.now() + timeDay * 86400000 : null;
+    try {
+      localStorage.setItem(
+        this.prefix + key,
+        JSON.stringify({ value, expires }),
+      );
+    } catch {
+      /* Private browsing or a full storage quota must not crash the app. */
+    }
   }
-
-  getItem<t>(key: string): t | null {
-    const EXP: localStorExp | undefined = this.configureExpGet(key);
-    if (!EXP) return null;
-    if (EXP.exp != null) {
-      if (new Date() > new Date(EXP.exp)) {
+  getItem<T>(key: string): T | null {
+    try {
+      const raw = localStorage.getItem(this.prefix + key);
+      if (!raw) return null;
+      const item = JSON.parse(raw);
+      if (
+        !item ||
+        !('value' in item) ||
+        (item.expires !== null &&
+          (!Number.isFinite(item.expires) || item.expires <= Date.now()))
+      ) {
         this.removeItem(key);
         return null;
       }
+      return item.value as T;
+    } catch {
+      this.removeItem(key);
+      return null;
     }
-
-    const KEY_HASH = SHA256(key).toString();
-    const VALUE = localStorage.getItem(KEY_HASH) ?? '';
-    if (VALUE.trim().length > 0 && VALUE != '') {
-      const DECRYPT_TEXT: string = AES.decrypt(VALUE, environment.key).toString(
-        enc.Utf8
-      );
-      return JSON.parse(DECRYPT_TEXT) as t;
-    }
-    return null;
   }
-
   removeItem(key: string): void {
-    const KEY = SHA256(key).toString();
-    localStorage.removeItem(KEY);
+    try {
+      localStorage.removeItem(this.prefix + key);
+    } catch {
+      /* Storage unavailable. */
+    }
   }
-
   hasItem(key: string): boolean {
-    const KEY = SHA256(key).toString();
-    return localStorage.getItem(KEY) != null;
-  }
-
-  private configureExp(key: string, timeDays?: number): void {
-    if (key == this.KEY_EXP) return;
-
-    const DAY_EXP = timeDays
-      ? new Date(new Date().getTime() + timeDays * 24 * 60 * 60 * 1000)
-      : null;
-    const NEW_KEY: localStorExp = {
-      key: key,
-      exp: DAY_EXP,
-    };
-
-    const VALUE: localStorExp[] =
-      this.getItem<localStorExp[]>(this.KEY_EXP) ?? [];
-    const INDEX = VALUE.findIndex((x) => x.key == key);
-    if (INDEX != -1) {
-      VALUE[INDEX] = NEW_KEY;
-    } else {
-      VALUE.push(NEW_KEY);
-    }
-    this.setItem(this.KEY_EXP, VALUE);
-  }
-
-  private configureExpGet(key: string): localStorExp | undefined {
-    if (key != this.KEY_EXP) {
-      const VALUE: localStorExp[] =
-        this.getItem<localStorExp[]>(this.KEY_EXP) ?? [];
-      return VALUE.find((x) => x.key == key);
-    } else {
-      return {
-        key,
-        exp: null,
-      };
-    }
+    return this.getItem(key) !== null;
   }
 }

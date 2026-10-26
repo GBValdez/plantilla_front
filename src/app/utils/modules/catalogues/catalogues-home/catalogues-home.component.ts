@@ -1,3 +1,6 @@
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { spanishPaginator } from '@utils/paginator-intl';
+import { ChangeDetectionStrategy } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -28,6 +31,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { depCatalogueInterface } from '../catalogue.Interface';
 
 @Component({
+  providers: [{ provide: MatPaginatorIntl, useFactory: spanishPaginator }],
+  changeDetection: ChangeDetectionStrategy.Eager,
   selector: 'app-catalogues-home',
   standalone: true,
   imports: [
@@ -50,7 +55,7 @@ export class CataloguesHomeComponent implements OnInit {
     private fb: FormBuilder,
     private catalogueSvc: CatalogueService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
   ) {}
   title: string = '';
   dependency?: depCatalogueInterface;
@@ -61,7 +66,7 @@ export class CataloguesHomeComponent implements OnInit {
   afterComplete?: (
     data: catalogueInterface,
     matDialog: MatDialog,
-    matDialogRef: MatDialogRef<CatalogueFormComponent>
+    matDialogRef: MatDialogRef<CatalogueFormComponent>,
   ) => void;
   pageNumber: number = 0;
   pageSize: number = 10;

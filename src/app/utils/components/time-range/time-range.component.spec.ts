@@ -8,9 +8,8 @@ describe('TimeRangeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TimeRangeComponent]
-    })
-    .compileComponents();
+      imports: [TimeRangeComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TimeRangeComponent);
     component = fixture.componentInstance;

@@ -19,7 +19,7 @@ export class UserAdminService {
   getUsers(
     pageSize: number,
     pageNumber: number,
-    filters?: userQueryFilter
+    filters?: userQueryFilter,
   ): Observable<pagDto<UserDto>> {
     const params: any = fixedQueryParams({
       pageSize,
@@ -31,12 +31,17 @@ export class UserAdminService {
     });
   }
   deleteUser(id: string): Observable<any> {
-    return this.httpClient.delete(`${this.urlBase}/${id}`);
+    return this.httpClient.delete(`${this.urlBase}/${encodeURIComponent(id)}`);
   }
   getUserByUserName(userName: string): Observable<UserDto> {
-    return this.httpClient.get<UserDto>(`${this.urlBase}/${userName}`);
+    return this.httpClient.get<UserDto>(
+      `${this.urlBase}/${encodeURIComponent(userName)}`,
+    );
   }
   updateUser(user: userUpdateDto, userName: string): Observable<any> {
-    return this.httpClient.put(`${this.urlBase}/${userName}`, user);
+    return this.httpClient.put(
+      `${this.urlBase}/${encodeURIComponent(userName)}`,
+      user,
+    );
   }
 }
